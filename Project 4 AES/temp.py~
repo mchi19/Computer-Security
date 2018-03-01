@@ -1,0 +1,4 @@
+#! /env/usr/bin python3.4
+
+for i in reverse(range(10)):
+    print(i)
