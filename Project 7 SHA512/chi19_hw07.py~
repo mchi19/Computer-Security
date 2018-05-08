@@ -1,0 +1,96 @@
+#!/usr/bin/env python3.4
+
+### Author: Max Chi
+### ECN: chi19
+### HW: 07
+### File: chi19_hw06.py
+### Due Date: 3/6/2018
+
+'''
+###SHA-512 algorightm steps:
+The following steps are from the 15.7.2 lecture notes provided by Professor Kak
+
+STEP 1: Pad the message so that its length is an intergral multiple of 1024, the block size. The only complication here is that the last 128 bits of the last block must contain a value that is the legnth of the message.
+
+STEP 2: Generate message schedule required for processing a 1024-bit block of the input message. The message schedule conssists of 80 64-bit words. the first 16 of these words are obtained directly from the 1024-bit message block. The rest of the words are obtained by applying permutation and mixing operations to the some of the previously generated words.
+
+STEP 3: Applying round-based processign to each 1024-bit input message block. There are 80 rounds to be carried out for each message block. For this round-based processing, we first store the hash values calculated for the previous message block in a temporary 64-bit variable that is denoted by a,b,c,d,e,f,g,h. in the ith round, we premute the values stored in tehse eight variables and, with two of the variables, we mix in the message schedule word words[ii] and a round constant K[i].
+
+STEP 4: We update the hash values calculated for the previous message block by adding to it the values in the temporary variables a,b,c,d,e,f,g,h.
+
+'''
+
+import sys
+import os
+from BitVector import *
+import hashlib
+
+if len(sys.argv) != 2:
+    sys.stderr.write("Usage: %s <string to be hashed>\n" % sys.argv[0])
+    sys.exit(1)
+
+with open(sys.argv[1], "r") as fp:
+    message = fp.read()
+
+###initialize hashcode for the first block
+h0 = BitVector(hexstring="6a09e667f3bcc908")
+h1 = BitVector(hexstring="bb67ae8584caa73b")
+h2 = BitVector(hexstring="3c6ef372fe94f82b")
+h3 = BitVector(hexstring="a54ff53a5f1d36f1")
+h4 = BitVector(hexstring="510e527fade682d1")
+h5 = BitVector(hexstring="9b05688c2b3e6c1f")
+h6 = BitVector(hexstring="1f83d9abfb41bd6b")
+h7 = BitVector(hexstring="5be0cd19137e2179")
+
+### K constants (round constants)
+'''
+K = ["428a2f98d728ae22",
+     "7137449123ef65cd",
+     "b5c0fbcfec4d3b2f",
+     "e9b5dba58189dbbc",
+     "3956c25bf348b538",
+     "59f111f1b605d019",
+     "923f82a4af194f9b",
+     "ab1c5ed5da6d8118",
+     ""]
+'''
+with open("temp.txt", "r") as f:
+    data = f.readlines()
+for x in data:
+    sys.stdout.write(x)
+    
+#modified from prof kak's SHA-1 example 
+bv = BitVector(textstring=message)
+bv_len = bv.length()
+bv1 = bv + BitVector(bitstring = "1")
+bv1_len = bv1.length()
+howmanyzeros = (896 - bv1_len) % 1024 #not too sure about using 896
+zerolist = [0] * howmanyzeros
+bv2 = bv1 + BitVector(bitlist = zerolist)
+bv3 = BitVector(intVal= bv_len, size = 128)
+bv4 = bv2 + bv3
+
+words = [None] * 80
+
+for n in range(0, bv4.length(), 1024):
+    block = bv4[n:n+1024]
+    words[0:16] = [block[i:i+64] for i in range(0,1024, 64)]
+    #for i in range(16,80):
+        
+
+#def SHA_512(message):
+#    with open(message, "r") as fp:
+#        content = fp.readlines()[0]
+#    print(content)
+
+    #f_out = open("output.txt","w")
+    #f_out.write(content)
+
+
+#if __name__ == "__main__":
+#    if len(sys.argv) != 2:
+#        sys.stderr.write("Usage: %s <string to be hashed>\n" % sys.argv[0])
+#        sys.exit(1)
+#    else:
+#        SHA_512(sys.argv[1])
+
