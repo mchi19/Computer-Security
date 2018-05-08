@@ -1,0 +1,82 @@
+####### Max Chi
+####### chi19
+####### ECE 404 HW#12
+####### 4/17/2018
+
+
+SHELL=/bin/sh
+PATH=/usr/local/lib/mh:$PATH
+MAILDIR=$HOME/Mail
+LOGFILE=$HOME/Mail/logfile
+SENDMAIL=/usr/sbin/sendmail
+#VERBOSE=1
+VERBOSE=0
+EOL="
+"
+LOG="$EOL$EOL$EOL"
+LOG="New message log:$EOL"
+LOG=`perl GET_MESSAGE_INDEX`
+LOG="$EOL"
+
+
+
+## Recipe_1:
+##
+## If the email has multiple entries in the "From:" header, send the email to spamFolder
+## Should trap junkMail 1 through junkMail 50
+##
+:0 :
+* ^From.*
+* ^From.*
+spamFolder
+
+
+
+## Recipe_2:
+##
+## If the email's "Subject:" header contains keywords of content that I deemed unecessary
+## such as FREE, cheap, buy or sale. The email will be sent to spamFolder
+## Should trap junkMail 51 through junkMail 63
+##
+:0 :
+* ^Subject.*(Brown|medications|diploma|Diploma|cheap|ills|Hostway|graduate|buy|Buy|degree|Degree)
+spamFolder
+
+
+
+## Recipe_3:
+## 
+## This recipe will evaluate the content (email body) of the messages and
+## send them to spamFolder depending on what they contain.
+##
+:0 B:
+* ($(?[0-9]*,?)*|EUR)
+* ^Content-Type: text/html
+spamFolder
+
+
+
+## Recipe_4:
+##
+## Thie recipe uses compound rules to contain certain emails with alternative
+## content types. Sends the emails to spamFolder
+##
+:0 HB:
+* ^Content-Type: multipart/alternative
+* ^Content-Type: text/plain
+* ^Content-Type: text/html
+spamFolder
+
+
+
+## Recipe_5:
+## 
+## The rest of the email to your special account will be 
+## deposited in /var/mail/ece404a8 mailbox
+##
+:0 :
+/var/mail/ece404a8
+
+
+
+
